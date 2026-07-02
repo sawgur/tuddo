@@ -4,27 +4,23 @@ Landing page for Tuddo — small-group prediction markets where everybody wins.
 
 ## Development
 
-Install dependencies and start the frontend + API together:
-
 ```bash
 npm install
 npm run dev
 ```
 
 - Web app: [http://localhost:5173](http://localhost:5173)
-- API: [http://localhost:3001](http://localhost:3001)
-
-The Vite dev server proxies `/api/*` requests to the backend.
+- Waitlist API is built into the Vite dev server at `/api/waitlist` (no separate server needed)
 
 ### Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start Vite + Express API |
-| `npm run dev:web` | Frontend only |
+| `npm run dev` | Start Vite (includes waitlist API) |
 | `npm run dev:api` | Backend only |
 | `npm run build` | Production build |
-| `npm start` | Run API server |
+| `npm run preview` | Build + serve app and API on port 3001 |
+| `npm start` | Run API server (serves `dist` if built) |
 
 ## Waitlist API
 

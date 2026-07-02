@@ -1,6 +1,12 @@
 import cors from "cors";
 import express from "express";
-import { addToWaitlist } from "./db.js";
+import { existsSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
+import { processWaitlistSignup } from "./waitlistRoute.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const distDir = join(__dirname, "..", "dist");
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,26 +19,25 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.post("/api/waitlist", (req, res) => {
-  const email = String(req.body?.email ?? "")
-    .trim()
-    .toLowerCase();
-
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: "Invalid email address." });
-  }
-
   try {
-    const row = addToWaitlist(email);
-    return res.status(201).json({ ok: true, entry: row });
+    const result = processWaitlistSignup(req.body?.email);
+    return res.status(result.status).json(result.body);
   } catch (err) {
-    if (err.code === "SQLITE_CONSTRAINT_UNIQUE") {
-      return res.status(409).json({ error: "You're already on the waitlist." });
-    }
     console.error(err);
     return res.status(500).json({ error: "Something went wrong. Try again." });
   }
 });
 
+if (existsSync(distDir)) {
+  app.use(express.static(distDir));
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(join(distDir, "index.html"));
+  });
+}
+
 app.listen(PORT, () => {
   console.log(`Tuddo API running on http://localhost:${PORT}`);
+  if (existsSync(distDir)) {
+    console.log(`Serving app from ${distDir}`);
+  }
 });

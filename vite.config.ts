@@ -1,11 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import waitlistApiPlugin from "./server/viteWaitlistPlugin.js";
 
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      "/api": "http://localhost:3001",
-    },
-  },
+  plugins: [react(), waitlistApiPlugin()],
 });
